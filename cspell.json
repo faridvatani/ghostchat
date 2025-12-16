@@ -3,7 +3,11 @@
   "ignorePaths": [],
   "dictionaryDefinitions": [],
   "dictionaries": [],
-  "words": ["Ghostchat"],
+  "words": [
+    "Elysia",
+    "elysiajs",
+    "Ghostchat"
+  ],
   "ignoreWords": [],
   "import": []
 }
