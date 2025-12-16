@@ -1,11 +1,13 @@
 import { Elysia } from 'elysia'
 import { nanoid } from 'nanoid'
 import { redis } from "@/lib/redis"
+import { authMiddleware } from './auth'
 
 
 const ROOM_TTL_SECONDS = 60 * 10 // 10 minutes
 
 const rooms = new Elysia({ prefix: "/room" })
+  .use(authMiddleware)
   .post("/create", async () => {
         const roomId = nanoid()
 
