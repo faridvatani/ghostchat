@@ -1,65 +1,67 @@
-import Image from "next/image";
+"use client";
+
+import GhostCursor from "@/components/GhostCursor";
+import { useUsername } from "@/hooks/use-username";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Home() {
+  const { username, isLoading } = useUsername();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      <header className="fixed top-4 right-4 z-50">
+        <ModeToggle />
+      </header>
+      <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-white dark:bg-green-950 z-0">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-green-600 ">
+              {">"}Ghost Room
+            </h1>
+            <p className="text-gray-600 dark:text-green-200 text-sm">
+              A private, self-destructing chat room.
+            </p>
+          </div>
+
+          <div className="border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900 p-6 backdrop-blur-md rounded-2xl">
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="flex items-center text-green-700 dark:text-green-300">
+                  Your Identity
+                </label>
+
+                <div className="flex items-center gap-3">
+                  <span className="flex-1 bg-white dark:bg-green-950 border border-green-300 dark:border-green-700 p-3 text-sm text-green-900 dark:text-green-300 font-mono rounded-xl">
+                    {isLoading ? "Creating username..." : username}
+                  </span>
+                </div>
+              </div>
+
+              <button className="w-full bg-green-600 dark:bg-green-500 text-white dark:text-black p-3 text-sm font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors mt-2 cursor-pointer disabled:opacity-50 rounded-2xl uppercase">
+                create secure room
+              </button>
+            </div>
+          </div>
+        </div>
+        <GhostCursor
+          // Visuals
+          color="#008236"
+          brightness={1}
+          edgeIntensity={0}
+          // Trail and motion
+          trailLength={50}
+          inertia={0.5}
+          // Post-processing
+          grainIntensity={0.05}
+          bloomStrength={0.1}
+          bloomRadius={1.0}
+          bloomThreshold={0.025}
+          // Fade-out behavior
+          fadeDelayMs={1000}
+          fadeDurationMs={1500}
+          zIndex={-1}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
       </main>
-    </div>
+    </>
   );
 }
