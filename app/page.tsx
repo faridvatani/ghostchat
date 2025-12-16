@@ -1,11 +1,24 @@
 "use client";
-
-import GhostCursor from "@/components/GhostCursor";
+import { client } from "@/lib/client";
+import { useMutation } from "@tanstack/react-query";
 import { useUsername } from "@/hooks/use-username";
 import { ModeToggle } from "@/components/mode-toggle";
+import GhostCursor from "@/components/GhostCursor";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const { username, isLoading } = useUsername();
+
+  const { mutate: createRoom } = useMutation({
+    mutationFn: async () => {
+      const res = await client.room.create.post();
+
+      if (res.status === 200) {
+        router.push(`/room/${res.data?.roomId}`);
+      }
+    },
+  });
 
   return (
     <>
@@ -32,12 +45,15 @@ export default function Home() {
 
                 <div className="flex items-center gap-3">
                   <span className="flex-1 bg-white dark:bg-green-950 border border-green-300 dark:border-green-700 p-3 text-sm text-green-900 dark:text-green-300 font-mono rounded-xl">
-                    {isLoading ? "Creating username..." : username}
+                    {isLoading ? "Loading..." : username}
                   </span>
                 </div>
               </div>
 
-              <button className="w-full bg-green-600 dark:bg-green-500 text-white dark:text-black p-3 text-sm font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors mt-2 cursor-pointer disabled:opacity-50 rounded-2xl uppercase">
+              <button
+                onClick={() => createRoom()}
+                className="w-full bg-green-600 dark:bg-green-500 text-white dark:text-black p-3 text-sm font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors mt-2 cursor-pointer disabled:opacity-50 rounded-2xl uppercase"
+              >
                 create secure room
               </button>
             </div>
