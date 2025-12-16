@@ -25,10 +25,10 @@ export default function Home() {
       <header className="fixed top-4 right-4 z-50">
         <ModeToggle />
       </header>
-      <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-white dark:bg-green-950 z-0">
+      <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-zinc-50 dark:bg-green-950 z-0">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-green-600 ">
+            <h1 className="text-3xl font-bold tracking-tight text-green-600">
               {">"}Ghost Room
             </h1>
             <p className="text-gray-600 dark:text-green-200 text-sm">
