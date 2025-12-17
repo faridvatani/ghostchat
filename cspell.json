@@ -9,7 +9,9 @@
     "Ghostchat",
     "hget",
     "hgetall",
-    "hset"
+    "hset",
+    "lrange",
+    "rpush"
   ],
   "ignoreWords": [],
   "import": []

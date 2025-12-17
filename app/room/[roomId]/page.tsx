@@ -1,10 +1,16 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { formatTimeRemaining } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { ChevronRight, Flame, Send } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { client } from "@/lib/client";
+import { format } from "date-fns";
+import { useUsername } from "@/hooks/use-username";
+import { useRealtime } from "@/lib/realtime-client";
+
 // import { Metadata } from "next";
 
 // interface RoomParams {
@@ -24,12 +30,47 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 const RoomPage = () => {
   const params = useParams();
-  const { isCopied, copy } = useCopyToClipboard();
   const roomId = params.roomId as string;
+  const router = useRouter();
+  const { username } = useUsername();
+  const { isCopied, copy } = useCopyToClipboard();
 
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { data: messages, refetch } = useQuery({
+    queryKey: ["messages", roomId],
+    queryFn: async () => {
+      const res = await client.messages.get({ query: { roomId } });
+      return res.data;
+    },
+  });
+
+  const { mutate: sendMessage, isPending } = useMutation({
+    mutationFn: async ({ text }: { text: string }) => {
+      await client.messages.post(
+        { sender: username, text },
+        { query: { roomId } }
+      );
+
+      setInput("");
+    },
+  });
+
+  useRealtime({
+    channels: [roomId],
+    events: ["chat.message", "chat.destroy"],
+    onData: ({ event }) => {
+      if (event === "chat.message") {
+        refetch();
+      }
+
+      if (event === "chat.destroy") {
+        router.push("/?destroyed=true");
+      }
+    },
+  });
 
   return (
     <main className="flex flex-col h-screen max-h-screen overflow-hidden bg-zinc-50 dark:bg-green-950">
@@ -87,7 +128,41 @@ const RoomPage = () => {
       </header>
 
       {/* MESSAGES */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin"></div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+        {messages?.messages.length === 0 && (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-green-700 dark:text-green-300 text-base font-mono">
+              No messages yet, start the conversation.
+            </p>
+          </div>
+        )}
+
+        {messages?.messages.map((msg) => (
+          <div key={msg.id} className="flex flex-col items-start">
+            <div className="max-w-[80%] group">
+              <div className="flex items-baseline gap-3 mb-1">
+                <span
+                  className={`text-xs font-bold ${
+                    msg.sender === username
+                      ? "text-green-700 dark:text-green-300"
+                      : "text-blue-700 dark:text-blue-300"
+                  }`}
+                >
+                  {msg.sender === username ? "YOU" : msg.sender}
+                </span>
+
+                <span className="text-[10px] text-green-700 dark:text-green-300">
+                  {format(msg.timestamp, "HH:mm")}
+                </span>
+              </div>
+
+              <p className="text-sm text-black dark:text-white leading-relaxed break-all">
+                {msg.text}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div className="p-4 border-t border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900">
         <div className="flex gap-2">
@@ -101,22 +176,23 @@ const RoomPage = () => {
               value={input}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && input.trim()) {
-                  // TODO: SEND MESSAGE
+                  sendMessage({ text: input });
                   inputRef.current?.focus();
                 }
               }}
               placeholder="Type message..."
               onChange={(e) => setInput(e.target.value)}
+              disabled={isPending}
               className="w-full bg-black border border-zinc-800 focus:border-zinc-700 focus:outline-none transition-colors text-zinc-100 placeholder:text-zinc-300 py-3 pl-8 pr-4 text-sm rounded-2xl"
             />
           </div>
 
           <button
             onClick={() => {
-              // TODO: SEND MESSAGE
+              sendMessage({ text: input });
               inputRef.current?.focus();
             }}
-            disabled={!input.trim()}
+            disabled={!input.trim() || isPending}
             className="flex flex-row items-center gap-1 md:gap-2 bg-green-600 dark:bg-green-500 text-white dark:text-black px-6 text-sm font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors disabled:cursor-not-allowed cursor-pointer uppercase rounded-2xl"
           >
             <Send className="size-4" />

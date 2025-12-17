@@ -4,13 +4,16 @@ import { useMutation } from "@tanstack/react-query";
 import { useUsername } from "@/hooks/use-username";
 import { ModeToggle } from "@/components/mode-toggle";
 import GhostCursor from "@/components/GhostCursor";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
   const { username, isLoading } = useUsername();
+  const searchParams = useSearchParams();
+  const wasDestroyed = searchParams.get("destroyed") === "true";
+  const error = searchParams.get("error");
 
-  const { mutate: createRoom } = useMutation({
+  const { mutate: createRoom, isPending } = useMutation({
     mutationFn: async () => {
       const res = await client.room.create.post();
 
@@ -27,6 +30,36 @@ export default function Home() {
       </header>
       <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-zinc-50 dark:bg-green-950 z-0">
         <div className="w-full max-w-md space-y-8">
+          {wasDestroyed && (
+            <div className="border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900 p-4 text-center backdrop-blur-md rounded-2xl">
+              <p className="text-red-500 dark:text-red-400 text-sm font-bold">
+                ROOM DESTROYED
+              </p>
+              <p className="text-zinc-900 dark:text-zinc-200 text-xs mt-1">
+                All messages were permanently deleted.
+              </p>
+            </div>
+          )}
+          {error === "room-not-found" && (
+            <div className="border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900 p-4 text-center backdrop-blur-md rounded-2xl">
+              <p className="text-red-500 dark:text-red-400 text-sm font-bold">
+                ROOM NOT FOUND
+              </p>
+              <p className="text-zinc-900 dark:text-zinc-200 text-xs mt-1">
+                This room may have expired or never existed.
+              </p>
+            </div>
+          )}
+          {error === "room-full" && (
+            <div className="border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900 p-4 text-center backdrop-blur-md rounded-2xl">
+              <p className="text-red-500 dark:text-red-400 text-sm font-bold">
+                ROOM FULL
+              </p>
+              <p className="text-zinc-900 dark:text-zinc-200 text-xs mt-1">
+                This room is at maximum capacity.
+              </p>
+            </div>
+          )}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-green-600">
               {">"}Ghost Room
@@ -52,9 +85,10 @@ export default function Home() {
 
               <button
                 onClick={() => createRoom()}
+                disabled={isPending}
                 className="w-full bg-green-600 dark:bg-green-500 text-white dark:text-black p-3 text-sm font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors mt-2 cursor-pointer disabled:opacity-50 rounded-2xl uppercase"
               >
-                create secure room
+                {isPending ? "Creating..." : "Create secure room"}
               </button>
             </div>
           </div>
@@ -62,7 +96,7 @@ export default function Home() {
         <GhostCursor
           // Visuals
           color="#008236"
-          brightness={1}
+          brightness={0.5}
           edgeIntensity={0}
           // Trail and motion
           trailLength={50}
