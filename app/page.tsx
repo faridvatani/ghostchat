@@ -5,8 +5,17 @@ import { useUsername } from "@/hooks/use-username";
 import { ModeToggle } from "@/components/mode-toggle";
 import GhostCursor from "@/components/GhostCursor";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function Home() {
+export default function Page() {
+  return (
+    <Suspense>
+      <Lobby />
+    </Suspense>
+  );
+}
+
+function Lobby() {
   const router = useRouter();
   const { username, isLoading } = useUsername();
   const searchParams = useSearchParams();
