@@ -107,6 +107,12 @@ const RoomPage = () => {
     },
   });
 
+  const { mutate: destroyRoom, isPending: isDestroying } = useMutation({
+    mutationFn: async () => {
+      await client.room.delete(null, { query: { roomId } });
+    },
+  });
+
   return (
     <main className="flex flex-col h-screen max-h-screen overflow-hidden bg-zinc-50 dark:bg-green-950">
       <header className="border-b border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900 p-4 flex items-center justify-between">
@@ -151,9 +157,8 @@ const RoomPage = () => {
         <div className="flex items-center gap-2">
           <ModeToggle />
           <button
-            onClick={() => {
-              // TODO: Implement room destruction logic
-            }}
+            onClick={() => destroyRoom()}
+            disabled={isDestroying}
             className="text-sm bg-zinc-800 hover:bg-red-600 p-3 text-white hover:text-white font-bold transition-all group flex items-center gap-2 disabled:opacity-50 rounded-2xl cursor-pointer uppercase"
           >
             <Flame className="size-5 group-hover:animate-pulse" />
