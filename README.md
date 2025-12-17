@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GhostChat 👻
+
+
+![GhostChat Screenshot 2](./Screenshot-2.png)
+![GhostChat Screenshot 1](./Screenshot-1.png)
+
+## Overview
+
+GhostChat is a modern, ephemeral messaging application designed for privacy and speed. Create a room, share the link, and chat in real-time. Messages are self-destructing, ensuring your conversations remain private and transient. Built with Next.js, TypeScript, Redis, and Tailwind for fast, ephemeral communication.
+
+## Features
+
+- **🔒 Private Rooms**: Generate unique, secure room links instantly.
+- **⚡ Real-time Communication**: Instant message delivery powered by Upstash Redis & Realtime.
+- **💣 Self-destructing Messages**: Messages are ephemeral and don't persist forever.
+- **🎨 Modern UI**: Sleek, responsive design built with Tailwind CSS v4 and Next.js 16.
+- **👻 Interactive Elements**: Dynamic 3D elements powered by Three.js.
+- **🌙 Dark Mode**: Built-in support for dark/light themes.
+
+## Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Runtime**: [Bun](https://bun.sh/)
+- **Backend/API**: [ElysiaJS](https://elysiajs.com/)
+- **Database/Realtime**: [Upstash Redis](https://upstash.com/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Validation**: [Zod](https://zod.dev/)
+- **State Management**: [TanStack Query](https://tanstack.com/query/latest)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Bun](https://bun.sh/) runtime installed.
+- An [Upstash](https://upstash.com/) account for Redis and Realtime.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1.  **Clone the repository**:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+    ```bash
+    git clone https://github.com/faridvatani/ghostchat.git
+    cd ghostchat
+    ```
 
-## Learn More
+2.  **Install dependencies**:
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    bun install
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3.  **Environment Setup**:
+    Copy the example environment file and configure your keys.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    ```bash
+    cp .env.example .env
+    ```
 
-## Deploy on Vercel
+    Open `.env` and add your Upstash Redis credentials and other necessary secrets.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4.  **Run the development server**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    ```bash
+    bun run dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to start chatting.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
