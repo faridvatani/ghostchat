@@ -2,8 +2,8 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { formatTimeRemaining } from "@/lib/utils";
-import { useRef, useState } from "react";
-import { ChevronRight, Flame, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronRight, Flame, Loader2, Send } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/client";
@@ -38,6 +38,41 @@ const RoomPage = () => {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { data: ttlData, isError: ttlError } = useQuery({
+    queryKey: ["ttl", roomId],
+    queryFn: async () => {
+      const res = await client.room.ttl.get({ query: { roomId } });
+      return res.data;
+    },
+    staleTime: Infinity, // TTL is calculated client-side after initial fetch
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (ttlData?.ttl !== undefined) setTimeRemaining(ttlData.ttl);
+  }, [ttlData]);
+
+  useEffect(() => {
+    if (timeRemaining === null || timeRemaining < 0) return;
+
+    if (timeRemaining === 0) {
+      router.push("/?destroyed=true");
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev === null || prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeRemaining, router]);
 
   const { data: messages, refetch } = useQuery({
     queryKey: ["messages", roomId],
@@ -195,8 +230,14 @@ const RoomPage = () => {
             disabled={!input.trim() || isPending}
             className="flex flex-row items-center gap-1 md:gap-2 bg-green-600 dark:bg-green-500 text-white dark:text-black px-6 text-sm font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors disabled:cursor-not-allowed cursor-pointer uppercase rounded-2xl"
           >
-            <Send className="size-4" />
-            <span className="md:block hidden">send</span>
+            {isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Send className="size-4" />
+            )}
+            <span className="md:block hidden">
+              {isPending ? "Sending..." : "Send"}
+            </span>
           </button>
         </div>
       </div>
