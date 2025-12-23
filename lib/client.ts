@@ -1,4 +1,5 @@
-import { treaty } from '@elysiajs/eden'
-import { app } from '../app/api/[[...slugs]]/route'
+import { treaty } from "@elysiajs/eden";
+import { app } from "../app/api/[[...slugs]]/route";
 
-export const client = treaty<typeof app>("localhost:3000").api
+const baseUrl = process.env.NEXT_PUBLIC_URL || "localhost:3000";
+export const client = treaty<typeof app>(baseUrl).api;
