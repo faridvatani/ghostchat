@@ -11,22 +11,6 @@ import { format } from "date-fns";
 import { useUsername } from "@/hooks/use-username";
 import { useRealtime } from "@/lib/realtime-client";
 
-// import { Metadata } from "next";
-
-// interface RoomParams {
-//   params: Promise<{ roomId: string }>;
-// }
-
-// export const generateMetadata = async ({
-//   params,
-// }: RoomParams): Promise<Metadata> => {
-//   const { roomId } = await params;
-
-//   return {
-//     title: `Room ${roomId}`,
-//     description: `Room ${roomId}`,
-//   };
-// };
 
 const RoomPage = () => {
   const params = useParams();
